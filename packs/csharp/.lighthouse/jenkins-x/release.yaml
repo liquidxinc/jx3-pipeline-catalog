@@ -225,7 +225,7 @@ spec:
           - jx step tag --version $(cat VERSION) --no-apply
           command:
           - /bin/sh
-          image: gcr.io/jenkinsxio/builder-jx: latest
+          image: gcr.io/jenkinsxio/builder-jx:latest
           name: tag-version
           resources: {}
         - args:
