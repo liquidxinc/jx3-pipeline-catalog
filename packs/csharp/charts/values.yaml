@@ -1,98 +1,106 @@
-# Default values for node projects.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# Global requirements
+jxRequirements:
+  envName: default
+  ingress:
+    domain: svc.cluster.local
+    externalDNS: true
+    namespaceSubDomain: .default.
+    serviceType: ClusterIP
+    tls:
+      email: cicd@liquidx.com
+      enabled: true
+      production: true
+      secretName: ""
+
+# Horizontally scale the application
 replicaCount: 1
+
+# Modify metadata for different resources
+metadata:
+  deployment: {}
+  service: {}
+  ingress: {}
+
+# Image configuration
 image:
   repository: draft
   tag: dev
   pullPolicy: IfNotPresent
+  imagePullSecrets:
+  - name: tekton-container-registry-auth
 
-# optional list of image pull secrets to use to pull images
-jx:
-  imagePullSecrets: []
-
-# define environment variables here as a map of key: value
-env:
-
-# enable this flag to use knative serve to deploy the app
-knativeDeploy: false
-
-# HorizontalPodAutoscaler
-hpa:
-  enabled: false
-  minReplicas: 2
-  maxReplicas: 6
-  cpuTargetAverageUtilization: 80
-  memoryTargetAverageUtilization: 80
-
-# Canary deployments
-# If enabled, Istio and Flagger need to be installed in the cluster
-canary:
-  enabled: false
-  progressDeadlineSeconds: 60
-  analysis:
-    interval: "1m"
-    threshold: 5
-    maxWeight: 60
-    stepWeight: 20
-    # WARNING: Canary deployments will fail and rollback if there is no traffic that will generate the below specified metrics.
-    metrics:
-      latency:
-        threshold: 500
-        interval: "1m"
-  # The host is using Istio Gateway or the underlying ingress mechanism
-  # This value is defaulted from the environments jx-requirements.yml ingress configuration
-  host: ""
-
-service:
-  name: REPLACE_ME_APP_NAME
-  type: ClusterIP
-  externalPort: 80
-  internalPort: 8080
-  annotations:
-    fabric8.io/expose: "true"
-    fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx"
+# Define resources for the container
 resources:
-  limits:
-    cpu: 400m
-    memory: 256Mi
-  requests:
-    cpu: 200m
-    memory: 128Mi
-probePath: /
+  default:
+    limits:
+      cpu: 2000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Provide custom env here
+env:
+  # Each field name should be the name of a container, mapped to an array of k8s Env objects
+  default:
+  - name: DD_AGENT_SERVICE_HOST
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: status.hostIP
+  - name: DD_AGENT_SERVICE_PORT
+    value: '8126'
+
+
+# Configuration for the service resource
+service:
+  enabled: true
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+
+# Config for the liveness probe
 livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
   initialDelaySeconds: 60
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
+
+# Config for the readiness probe
 readinessProbe:
-  failureThreshold: 1
+  httpGet:
+    path: /healthz
+    port: 8080
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
 
+# Fill this section if deploying a custom certificate
+tls:
+  certificate:
+    enabled: false
+    issuerName: ""
+    issuerKind: ""
 
-# custom ingress annotations on this service
+# Config for ingress
 ingress:
-  annotations:
-#      kubernetes.io/ingress.class: nginx
+  enabled: true
+  extraURLs: []
 
-# values we use from the `jx-requirements.yml` file if we are using helmfile and helm 3
-jxRequirements:
-  ingress:
-    domain: ""
-    externalDNS: false
-    namespaceSubDomain: -jx.
-    serviceType: ""
-    tls:
-      email: ""
-      enabled: false
-      production: false
-      secretName: ""
+# Execution command
+command:
+- sh
+- -c
+- /bin/project/inblock-tradetalk
 
-    # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
-    apiVersion: "extensions/v1beta1"
+# Add any additional volumes here
+extraVolumes: []
 
-    # shared ingress annotations on all services
-    annotations:
-    #  kubernetes.io/ingress.class: nginx
+# Add any additional volume mounts here
+extraVolumeMounts: {}

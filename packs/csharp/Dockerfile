@@ -1,21 +1,31 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS builder
-WORKDIR /app
+FROM  mcr.microsoft.com/dotnet/core/sdk:3.1-alpine3.10 AS build
 
-# caches restore result by copying csproj file separately
-COPY *.csproj .
-RUN dotnet restore
+# Install tools required to build the project
+# We will need to run `docker build --no-cache .` to update those dependencies
+RUN apk add --no-cache make
 
+# These layers will only be re-built when Gopkg files are updated
+RUN mkdir -p /dotnet/src/project
+WORKDIR /dotnet/src/project/
+
+# Copy all project and build it
+# This layer will be rebuilt whenever a file has changed in the project directory
 COPY . .
-RUN dotnet publish --output /app/ --configuration Release
-RUN sed -n 's:.*<AssemblyName>\(.*\)</AssemblyName>.*:\1:p' *.csproj > __assemblyname
-RUN if [ ! -s __assemblyname ]; then filename=$(ls *.csproj); echo ${filename%.*} > __assemblyname; fi
+RUN make build
 
-# Stage 2
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
-WORKDIR /app
-COPY --from=builder /app .
+# This results in a single layer image
+FROM alpine:3.10
+COPY --from=build /dotnet/src/project/bin/project /bin/project
+WORKDIR /bin/project
 
-ENV PORT 80
-EXPOSE 80
+RUN apk update
+RUN apk add icu-libs libintl libstdc++
 
-ENTRYPOINT dotnet $(cat /app/__assemblyname).dll
+# Uncomment if this app will listen on a non-default URL
+# ENV ASPNETCORE_URLS="http://*:8080"
+
+# Uncomment if this app will listen to HTTP requests
+EXPOSE 8080
+
+# Separate executable and arguments list
+ENTRYPOINT ["/bin/project/REPLACE_ME_APP_NAME"]
