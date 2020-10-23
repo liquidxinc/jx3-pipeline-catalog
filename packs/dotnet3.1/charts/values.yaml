@@ -58,7 +58,6 @@ env:
   - name: DD_AGENT_SERVICE_PORT
     value: '8126'
 
-
 # Configuration for the service resource
 service:
   enabled: true
