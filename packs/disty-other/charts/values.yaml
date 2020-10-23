@@ -51,7 +51,7 @@ resources:
 env:
   default:
   - name: LQX_CONFIG_PATH
-    value: /etc/disty-shared/config;./config
+    value: /etc/REPLACE_ME_APP_NAME/config;./config
   - name: DD_AGENT_SERVICE_HOST
     valueFrom:
       fieldRef:
