@@ -19,7 +19,15 @@ replicaCount: 1
 metadata:
   deployment: {}
   service: {}
-  ingress: {}
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/limit-rpm: "600"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        more_set_headers "Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';";
+        more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+        more_set_headers "Feature-Policy: camera 'none'; microphone 'none'; geolocation 'none'; encrypted-media 'none'; payment 'none'; speaker 'none'; usb 'none';";
 
 # Image configuration
 image:
@@ -33,15 +41,14 @@ image:
 resources:
   default:
     limits:
-      cpu: 2000m
+      cpu: 1000m
       memory: 1Gi
     requests:
       cpu: 100m
-      memory: 128Mi
+      memory: 256Mi
 
 # Provide custom env here
 env:
-  # Each field name should be the name of a container, mapped to an array of k8s Env objects
   default:
   - name: DD_AGENT_SERVICE_HOST
     valueFrom:
@@ -97,10 +104,16 @@ ingress:
 command:
 - sh
 - -c
-- /bin/project/REPLACE_ME_APP_NAM
+- /bin/project/REPLACE_ME_APP_NAME
 
 # Add any additional volumes here
-extraVolumes: []
+extraVolumes:
+- name: config-files
+  secret:
+    secretName: REPLACE_ME_APP_NAME-config-files
 
 # Add any additional volume mounts here
-extraVolumeMounts: {}
+extraVolumeMounts:
+  default:
+  - name: config-files
+    mountPath: /etc/REPLACE_ME_APP_NAME/config

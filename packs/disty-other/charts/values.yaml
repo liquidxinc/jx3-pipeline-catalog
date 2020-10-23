@@ -42,10 +42,10 @@ resources:
   default:
     limits:
       cpu: 1000m
-      memory: 2Gi
+      memory: 1Gi
     requests:
       cpu: 100m
-      memory: 512Mi
+      memory: 256Mi
 
 # Provide custom env here
 env:
@@ -101,6 +101,7 @@ ingress:
   enabled: true
   extraURLs: []
 
+# Execution command
 command:
 - sh
 - -c
@@ -108,67 +109,12 @@ command:
 
 # Add any additional volumes here
 extraVolumes:
-- name: as2gateway-key
+- name: config-files
   secret:
-    secretName: disty-shared-as2gateway-key
-- name: config-auth
-  secret:
-    secretName: disty-shared-config-auth
-- name: config-blockchain
-  secret:
-    secretName: disty-shared-config-blockchain
-- name: config-client
-  secret:
-    secretName: disty-shared-config-client
-- name: config-db
-  secret:
-    secretName: disty-shared-config-db
-- name: config-default
-  secret:
-    secretName: disty-shared-config-default
-- name: config-integrations
-  secret:
-    secretName: disty-shared-config-integrations
-- name: config-logger
-  secret:
-    secretName: disty-shared-config-logger
-- name: config-sftp
-  secret:
-    secretName: disty-shared-config-sftp
-- name: config-sqs
-  secret:
-    secretName: disty-shared-config-sqs
+    secretName: REPLACE_ME_APP_NAME-config-files
 
 # Add any additional volume mounts here
 extraVolumeMounts:
   default:
-  - name: as2gateway-key
-    mountPath: /etc/disty-shared/keys/as2gateway.key
-    subPath: as2gateway.key
-  - name: config-auth
-    mountPath: /etc/disty-shared/config/auth.json
-    subPath: auth.json
-  - name: config-blockchain
-    mountPath: /etc/disty-shared/config/blockchain.json
-    subPath: blockchain.json
-  - name: config-client
-    mountPath: /etc/disty-shared/config/client.json
-    subPath: client.json
-  - name: config-db
-    mountPath: /etc/disty-shared/config/db.json
-    subPath: db.json
-  - name: config-default
-    mountPath: /etc/disty-shared/config/default.json
-    subPath: default.json
-  - name: config-integrations
-    mountPath: /etc/disty-shared/config/integrations.json
-    subPath: integrations.json
-  - name: config-logger
-    mountPath: /etc/disty-shared/config/logger.json
-    subPath: logger.json
-  - name: config-sftp
-    mountPath: /etc/disty-shared/config/sftp.json
-    subPath: sftp.json
-  - name: config-sqs
-    mountPath: /etc/disty-shared/config/sqs.json
-    subPath: sqs.json
+  - name: config-files
+    mountPath: /etc/REPLACE_ME_APP_NAME/config
