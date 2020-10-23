@@ -214,19 +214,11 @@ spec:
           resources: {}
         - args:
           - -c
-          - jx step next-version --use-git-tag-only
+          - jx step next-version --use-git-tag-only --tag
           command:
           - /bin/sh
           image: gcr.io/jenkinsxio/builder-jx:latest
           name: next-version
-          resources: {}
-        - args:
-          - -c
-          - jx step tag --version $(cat VERSION) --no-apply
-          command:
-          - /bin/sh
-          image: gcr.io/jenkinsxio/builder-jx:latest
-          name: tag-version
           resources: {}
         - args:
           - '[ -d /builder/home ] || mkdir -p /builder && ln -s /tekton/home /builder/home'

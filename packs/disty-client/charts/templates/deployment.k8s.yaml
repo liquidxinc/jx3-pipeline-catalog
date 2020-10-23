@@ -39,20 +39,9 @@ spec:
         command:
 {{ toYaml .Values.command | trim | indent 8 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-{{- if hasKey .Values.extraVolumeMounts (include "name" .) }}
-{{- $extraVolumeMounts := index .Values.extraVolumeMounts (include "name" .) }}
-{{- $lenExtraVolumeMounts := len $extraVolumeMounts }}
-{{- if gt $lenExtraVolumeMounts 0 }}
-        volumeMounts:
-{{ toYaml $extraVolumeMounts | trim | indent 8 }}
-{{- end }}
-{{- end }}
         envFrom:
         - secretRef:
             name: {{ template "name" .}}-config-env
-        env:
-        - name: LQX_ENVIRONMENT
-          value: {{ template "environmentName" . }}
 {{ (include "envVars" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
 {{- if hasKey .Values.service "ports" }}
 {{- $ports := .Values.service.ports }}
@@ -75,12 +64,6 @@ spec:
         readinessProbe:
 {{ toYaml .Values.readinessProbe | trim | indent 10 }}
 {{- end }}
-        resources:
-{{ (include "resources" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 10 }}
-{{- if hasKey .Values "extraVolumes" }}
-{{- $lenExtraVolumes := len .Values.extraVolumes }}
-{{- if gt $lenExtraVolumes 0 }}
-      volumes:
-{{ toYaml .Values.extraVolumes | trim | indent 6 }}
-{{- end }}
-{{- end }}
+{{ (include "resources" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
+{{ (include "volumeMounts" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
+{{ (include "volumes" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 6 }}

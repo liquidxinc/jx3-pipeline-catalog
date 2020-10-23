@@ -97,7 +97,7 @@ ingress:
 command:
 - sh
 - -c
-- /bin/project/inblock-tradetalk
+- /bin/project/REPLACE_ME_APP_NAM
 
 # Add any additional volumes here
 extraVolumes: []
