@@ -32,7 +32,6 @@ RUN update-ca-certificates
 
 # Copy binaries over
 COPY --from=build /bin/project /bin/project
-COPY --from=build /bin/envconsul /bin/envconsul
 COPY --from=build /bin/swagger-ui /bin/swagger-ui
 WORKDIR /bin
 
