@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine3.10 AS build
+FROM golang:1.15-alpine3.12 AS build
 
 # Install tools required to build the project
 # We will need to run `docker build --no-cache .` to update those dependencies
