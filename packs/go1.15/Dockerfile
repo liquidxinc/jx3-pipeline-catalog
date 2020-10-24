@@ -8,6 +8,7 @@ RUN apk add --no-cache git make
 # Uncomment to keyscan github for SSH access; ssh key must be mounted to /root/.ssh
 RUN apk add --no-cache openssh
 RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
+RUN mkdir -p /root/.ssh
 RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
