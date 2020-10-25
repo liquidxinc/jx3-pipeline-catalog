@@ -39,7 +39,7 @@ RUN apk add ca-certificates --no-cache
 RUN update-ca-certificates
 
 # Copy binaries over
-COPY --from=build /go/src/project/bin /bin/project
+COPY --from=build /go/src/project/bin/project /bin/project
 
 # Uncomment if this app will listen to HTTP requests
 EXPOSE 8001

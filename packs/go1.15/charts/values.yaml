@@ -71,8 +71,8 @@ service:
 # Config for the liveness probe
 livenessProbe:
   httpGet:
-    path: /healthz
-    port: 8080
+    path: /api/v1/healthz
+    port: 8001
   initialDelaySeconds: 60
   periodSeconds: 10
   successThreshold: 1
@@ -81,8 +81,8 @@ livenessProbe:
 # Config for the readiness probe
 readinessProbe:
   httpGet:
-    path: /healthz
-    port: 8080
+    path: /api/v1/healthz
+    port: 8001
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
