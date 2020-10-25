@@ -6,24 +6,32 @@ RUN apk update
 RUN apk add --no-cache git make
 
 # Uncomment to keyscan github for SSH access; ssh key must be mounted to /root/.ssh
+ARG SSH_PRIVATE_KEY
 RUN apk add --no-cache openssh
 RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
 RUN mkdir -p /root/.ssh
+RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa
+RUN chmod 400 /root/.ssh/id_rsa
 RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 # These layers will only be re-built when Gopkg files are updated
 COPY go.mod /go/src/project/
-WORKDIR /go/src/project/
+WORKDIR /go/src/project
 
 # Copy all project and build it
 # This layer will be rebuilt when ever a file has changed in the project directory
-COPY . /go/src/project/
-RUN make build OUTPUT_DIR=/bin/project
-COPY ./swagger-ui /bin/swagger-ui
+RUN wget -O /usr/local/bin/swagger "https://github.com/go-swagger/go-swagger/releases/download/v0.25.0/swagger_linux_amd64"
+RUN chmod +x /usr/local/bin/swagger
+COPY Makefile .
+COPY src src
+COPY Makefile swagger* swagger/
+RUN mkdir gen
+ENV GOPRIVATE=github.com/liquidxinc
+RUN make build
 
 # This results in a single layer image
-FROM alpine:3.10
+FROM alpine:3.12
 
 # Add TLS certs for HTTPS requests
 RUN apk update
@@ -31,9 +39,7 @@ RUN apk add ca-certificates --no-cache
 RUN update-ca-certificates
 
 # Copy binaries over
-COPY --from=build /bin/project /bin/project
-COPY --from=build /bin/swagger-ui /bin/swagger-ui
-WORKDIR /bin
+COPY --from=build /go/src/project/bin /bin/project
 
 # Uncomment if this app will listen to HTTP requests
 EXPOSE 8001

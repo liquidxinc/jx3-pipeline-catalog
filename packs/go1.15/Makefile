@@ -1,7 +1,18 @@
 OUTPUT_DIR := bin/project
-MAIN_GO := ./
 
-build:
+# Decides whether to build a swagger API or a standard Go project
+ifneq (,$(wildcard swagger/swagger.yml))
+MAIN_GO := ./gen/cmd/server
+build: build-swagger build-binary
+else
+MAIN_GO := ./
+build: build-binary
+endif
+
+build-swagger:
+	swagger generate server -f ./swagger/swagger.yml --main-package server -t ./gen
+
+build-binary:
 	go build -o $(OUTPUT_DIR) $(MAIN_GO)
 
 test:
