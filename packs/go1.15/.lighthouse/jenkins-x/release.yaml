@@ -237,7 +237,7 @@ spec:
           name: jx-variables
           resources: {}
         - args:
-          - source .jx/variables.sh && /kaniko/executor $KANIKO_FLAGS --cache=false --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --cache-repo=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/cache --build-arg SSH_PRIVATE_KEY="$(cat /root/.ssh_mounted/id_rsa_mounted)"
+          - source .jx/variables.sh && /kaniko/executor $KANIKO_FLAGS --cache=false --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --cache-repo=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/cache --build-arg SSH_PRIVATE_KEY="$(cat /root/.ssh_mounted/id_rsa)"
           command:
           - /busybox/sh
           - -c
