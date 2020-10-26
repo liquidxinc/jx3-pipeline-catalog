@@ -103,7 +103,7 @@ ingress:
 command:
 - sh
 - -c
-- /bin/project/REPLACE_ME_APP_NAME
+- /bin/project
 
 # Add any additional volumes here
 extraVolumes:
