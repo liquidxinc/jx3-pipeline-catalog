@@ -10,7 +10,7 @@ jxRequirements:
       email: cicd@liquidx.com
       enabled: true
       production: true
-      secretName: ""
+      secretName: tls-env-wildcard
 
 # Horizontally scale the application
 replicaCount: 1
