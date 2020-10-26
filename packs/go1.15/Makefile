@@ -10,6 +10,7 @@ build: build-binary
 endif
 
 build-swagger:
+	mkdir -p ./gen
 	swagger generate server -f ./swagger/swagger.yml --main-package server -t ./gen
 
 build-binary:

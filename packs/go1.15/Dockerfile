@@ -26,7 +26,7 @@ RUN chmod +x /usr/local/bin/swagger
 COPY Makefile .
 COPY src src
 COPY Makefile swagger* swagger/
-RUN mkdir gen
+COPY Makefile gen* gen/
 ENV GOPRIVATE=github.com/liquidxinc
 RUN make build
 
