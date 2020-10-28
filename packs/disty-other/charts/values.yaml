@@ -12,6 +12,10 @@ jxRequirements:
       production: true
       secretName: tls-env-wildcard
 
+# Defines whether this should be a Deployment, Job, CronJob, or KNative Service
+# options: deployment, job, cronjob, knative
+type: deployment
+
 # Horizontally scale the application
 replicaCount: 1
 

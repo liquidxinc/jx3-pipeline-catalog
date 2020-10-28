@@ -1,3 +1,4 @@
+{{- if eq .Values.type "deployment" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,3 +68,4 @@ spec:
 {{ (include "resources" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
 {{ (include "volumeMounts" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
 {{ (include "volumes" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 6 }}
+{{- end }}
