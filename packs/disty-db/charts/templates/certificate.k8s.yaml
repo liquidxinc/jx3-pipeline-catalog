@@ -1,0 +1,24 @@
+{{- if .Values.tls.certificate.enabled }}
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: {{ template "name" . }}
+spec:
+  secretName: {{ template "tlsSecretName" . }}
+  organization:
+  - liquidx
+  issuerRef:
+    name: {{ .Values.tls.certificate.issuerName }}
+    kind: {{ .Values.tls.certificate.issuerKind }}
+  dnsNames:
+  - {{ template "url" . }}
+{{- if hasKey .Values.ingress "extraURLs" }}
+{{- $extraURLs := .Values.ingress.extraURLs }}
+{{- $lenExtraURLs := len $extraURLs }}
+{{- if gt $lenExtraURLs 0 }}
+{{- range $i, $url := .Values.ingress.extraURLs }}
+  - {{ $url }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

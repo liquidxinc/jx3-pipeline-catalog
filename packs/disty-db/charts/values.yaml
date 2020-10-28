@@ -1,0 +1,116 @@
+# Global requirements
+jxRequirements:
+  envName: default
+  ingress:
+    domain: svc.cluster.local
+    externalDNS: true
+    namespaceSubDomain: .default.
+    serviceType: ClusterIP
+    tls:
+      email: cicd@liquidx.com
+      enabled: true
+      production: true
+      secretName: tls-env-wildcard
+
+# Defines whether this should be a Deployment, Job, CronJob, or KNative Service
+# options: deployment, job, cronjob, knative
+type: job
+
+# Horizontally scale the application
+replicaCount: 1
+
+# Modify metadata for different resources
+metadata:
+  deployment: {}
+  job: {}
+  ingress: {}
+
+# Image configuration
+image:
+  repository: draft
+  tag: dev
+  pullPolicy: IfNotPresent
+  imagePullSecrets:
+  - name: tekton-container-registry-auth
+
+# Define resources for the container
+resources:
+  default:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+# Provide custom env here
+env:
+  default:
+  - name: LQX_CONFIG_PATH
+    value: /etc/REPLACE_ME_APP_NAME/config;./config
+  - name: DD_AGENT_SERVICE_HOST
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: status.hostIP
+  - name: DD_AGENT_SERVICE_PORT
+    value: '8126'
+
+# Configuration for the service resource
+service:
+  enabled: false
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+
+# Config for the liveness probe
+# livenessProbe:
+#   httpGet:
+#     path: /api/v1/ops/healthcheck
+#     port: 8000
+#   initialDelaySeconds: 60
+#   periodSeconds: 10
+#   successThreshold: 1
+#   timeoutSeconds: 1
+
+# Config for the readiness probe
+# readinessProbe:
+#   httpGet:
+#     path: /api/v1/ops/healthcheck
+#     port: 8000
+#   periodSeconds: 10
+#   successThreshold: 1
+#   timeoutSeconds: 1
+
+# Fill this section if deploying a custom certificate
+tls:
+  certificate:
+    enabled: false
+    issuerName: ""
+    issuerKind: ""
+
+# Config for ingress
+ingress:
+  enabled: false
+  extraURLs: []
+
+# Execution command
+command:
+- sh
+- -c
+- npm start
+
+# Add any additional volumes here
+extraVolumes:
+- name: config-files
+  secret:
+    secretName: REPLACE_ME_APP_NAME-config-files
+
+# Add any additional volume mounts here
+extraVolumeMounts:
+  default:
+  - name: config-files
+    mountPath: /etc/REPLACE_ME_APP_NAME/config
