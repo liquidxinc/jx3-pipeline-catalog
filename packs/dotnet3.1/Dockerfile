@@ -2,7 +2,7 @@ FROM  mcr.microsoft.com/dotnet/core/sdk:3.1-alpine3.10 AS build
 
 # Install tools required to build the project
 # We will need to run `docker build --no-cache .` to update those dependencies
-RUN apk add --no-cache make
+RUN apk add --no-cache make curl
 
 # These layers will only be re-built when Gopkg files are updated
 RUN mkdir -p /dotnet/src/project
