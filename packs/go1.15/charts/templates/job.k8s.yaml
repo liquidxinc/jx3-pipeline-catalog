@@ -13,7 +13,6 @@ metadata:
 {{ toYaml .Values.metadata.job.annotations | trim | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ default 1 .Values.replicaCount }}
   template:
     metadata:
       labels:
