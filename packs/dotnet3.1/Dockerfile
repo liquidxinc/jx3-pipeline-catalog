@@ -8,6 +8,17 @@ RUN apk add --no-cache make
 RUN mkdir -p /dotnet/src/project
 WORKDIR /dotnet/src/project/
 
+# Setup nuget auth
+ARG VSS_NUGET_EXTERNAL_FEED_ENDPOINTS
+ENV VSS_NUGET_EXTERNAL_FEED_ENDPOINTS=${VSS_NUGET_EXTERNAL_FEED_ENDPOINTS}
+ENV NUGET_REPO="Microsoft/artifacts-credprovider"
+ENV NUGET_FILE="Microsoft.NuGet.CredentialProvider.tar.gz"
+ENV NUGET_VERSION="v0.1.24"
+ENV NUGET_URI="https://github.com/${NUGET_REPO}/releases/download/${NUGET_VERSION}/${NUGET_FILE}"
+ENV NUGET_PLUGIN_DIR="${HOME}/.nuget/plugins"
+RUN mkdir -p "${NUGET_PLUGIN_DIR}"
+RUN curl -H "Accept: application/octet-stream" -s -S -L "$NUGET_URI" | tar xz -C "$HOME/.nuget/" "plugins/netcore"
+
 # Copy all project and build it
 # This layer will be rebuilt whenever a file has changed in the project directory
 COPY . .
