@@ -36,7 +36,6 @@ spec:
       containers:
       - name: {{ template "name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
 {{ toYaml .Values.command | trim | indent 8 }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}

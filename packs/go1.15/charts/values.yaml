@@ -14,7 +14,12 @@ jxRequirements:
 
 # Defines whether this should be a Deployment, Job, CronJob, or KNative Service
 # options: deployment, job, cronjob, knative
-type: deployment
+type: kservice
+
+# Knative Service specific config options
+kservice:
+  containerConcurrency: 0
+  timeoutSeconds: 600
 
 # Horizontally scale the application
 replicaCount: 1
@@ -22,6 +27,13 @@ replicaCount: 1
 # Modify metadata for different resources
 metadata:
   deployment: {}
+  kservice:
+    annotations:
+      autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
+      autoscaling.knative.dev/metric: concurrency
+      autoscaling.knative.dev/maxScale: "10"
+      autoscaling.knative.dev/target: "1"
+      ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "knative", "service": "REPLACE_ME_APP_NAME"}]'
   service: {}
   ingress:
     annotations:

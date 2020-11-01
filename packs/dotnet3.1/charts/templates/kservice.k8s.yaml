@@ -1,43 +1,40 @@
-{{- if eq .Values.type "deployment" }}
-apiVersion: apps/v1
-kind: Deployment
+{{- if eq .Values.type "kservice" }}
+apiVersion: serving.knative.dev/v1
+kind: Service
 metadata:
   name: {{ template "name" . }}
   labels:
     app: {{ template "name" . }}
-{{- if hasKey .Values.metadata.deployment "labels" }}
-{{ toYaml .Values.metadata.deployment.labels | trim | indent 4 }}
+{{- if hasKey .Values.metadata.kservice "labels" }}
+{{ toYaml .Values.metadata.kservice.labels | trim | indent 4 }}
 {{- end }}
-{{- if hasKey .Values.metadata.deployment "annotations" }}
+{{- if hasKey .Values.metadata.kservice "annotations" }}
   annotations:
-{{ toYaml .Values.metadata.deployment.annotations | trim | indent 4 }}
+{{ toYaml .Values.metadata.kservice.annotations | trim | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ default 1 .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ template "name" . }}
-{{- if hasKey .Values.metadata.deployment "labels" }}
-{{ toYaml .Values.metadata.deployment.labels | trim | indent 6 }}
-{{- end }}
   template:
     metadata:
       labels:
         app: {{ template "name" . }}
-{{- if hasKey .Values.metadata.deployment "labels" }}
-{{ toYaml .Values.metadata.deployment.labels | trim | indent 8 }}
+{{- if hasKey .Values.metadata.kservice "labels" }}
+{{ toYaml .Values.metadata.kservice.labels | trim | indent 8 }}
 {{- end }}
-{{- if hasKey .Values.metadata.deployment "annotations" }}
+{{- if hasKey .Values.metadata.kservice "annotations" }}
       annotations:
-{{ toYaml .Values.metadata.deployment.annotations | trim | indent 8 }}
+{{ toYaml .Values.metadata.kservice.annotations | trim | indent 8 }}
 {{- end }}
     spec:
       serviceAccountName: {{ template "serviceAccountName" . }}
+      timeoutSeconds: {{ .Values.kservice.timeoutSeconds }}
+      containerConcurrency: {{ .Values.kservice.containerConcurrency }}
       containers:
       - name: {{ template "name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+{{- if hasKey .Values "command" }}
         command:
 {{ toYaml .Values.command | trim | indent 8 }}
+{{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - secretRef:
@@ -67,4 +64,7 @@ spec:
 {{ (include "resources" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
 {{ (include "volumeMounts" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
 {{ (include "volumes" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 6 }}
+  traffic:
+  - latestRevision: true
+    percent: 100
 {{- end }}

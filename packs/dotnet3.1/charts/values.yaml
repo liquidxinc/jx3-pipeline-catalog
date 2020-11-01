@@ -13,8 +13,13 @@ jxRequirements:
       secretName: tls-env-wildcard
 
 # Defines whether this should be a Deployment, Job, CronJob, or KNative Service
-# options: deployment, job, cronjob, knative
+# options: deployment, job, cronjob, kservice
 type: deployment
+
+# Knative Service specific config options
+kservice:
+  containerConcurrency: 0
+  timeoutSeconds: 600
 
 # Horizontally scale the application
 replicaCount: 1
@@ -22,6 +27,13 @@ replicaCount: 1
 # Modify metadata for different resources
 metadata:
   deployment: {}
+  kservice:
+    annotations:
+      autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
+      autoscaling.knative.dev/metric: concurrency
+      autoscaling.knative.dev/maxScale: "10"
+      autoscaling.knative.dev/target: "1"
+      ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "knative", "service": "REPLACE_ME_APP_NAME"}]'
   service: {}
   ingress:
     annotations:
@@ -61,6 +73,14 @@ env:
         fieldPath: status.hostIP
   - name: DD_AGENT_SERVICE_PORT
     value: '8126'
+  - name: LQX_VAULT_ADDR
+    value: https://vault.secret-infra:8200
+  - name: LQX_VAULT_CACERT
+    value: /etc/vault/cacert/ca.crt
+  - name: LQX_VAULT_SKIPVERIFY
+    value: false
+  - name: LQX_VAULT_ROLE
+    value: secret-infra
 
 # Configuration for the service resource
 service:
@@ -114,9 +134,14 @@ extraVolumes:
 - name: config-files
   secret:
     secretName: REPLACE_ME_APP_NAME-config-files
+- name: vault-tls
+  secret:
+    secretName: vault-tls
 
 # Add any additional volume mounts here
 extraVolumeMounts:
   default:
   - name: config-files
     mountPath: /etc/REPLACE_ME_APP_NAME/config
+  - name: vault-tls
+    mountPath: /etc/vault/cacert
