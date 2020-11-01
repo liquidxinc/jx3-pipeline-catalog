@@ -73,6 +73,14 @@ env:
         fieldPath: status.hostIP
   - name: DD_AGENT_SERVICE_PORT
     value: '8126'
+  - name: LQX_VAULT_ADDR
+    value: https://vault.secret-infra:8200
+  - name: LQX_VAULT_CACERT
+    value: /etc/vault/cacert/ca.crt
+  - name: LQX_VAULT_SKIPVERIFY
+    value: 'false'
+  - name: LQX_VAULT_ROLE
+    value: secret-infra
 
 # Configuration for the service resource
 service:
@@ -126,9 +134,14 @@ extraVolumes:
 - name: config-files
   secret:
     secretName: REPLACE_ME_APP_NAME-config-files
+- name: vault-tls
+  secret:
+    secretName: vault-tls
 
 # Add any additional volume mounts here
 extraVolumeMounts:
   default:
   - name: config-files
     mountPath: /etc/REPLACE_ME_APP_NAME/config
+  - name: vault-tls
+    mountPath: /etc/vault/cacert
