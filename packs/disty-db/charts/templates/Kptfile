@@ -5,7 +5,7 @@ metadata:
 upstream:
   type: git
   git:
-    commit: 69d91bd6eef179cd6ba4b65ae129af3222e98215
+    commit: 25646433e33a48ad70fcb2ca3b5c4aac37435dda
     repo: https://github.com/liquidxinc/jx3-pipeline-catalog
     directory: /charts/templates
     ref: master
