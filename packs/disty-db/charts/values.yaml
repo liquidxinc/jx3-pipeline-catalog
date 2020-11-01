@@ -18,21 +18,24 @@ type: job
 
 # Knative Service specific config options
 kservice:
-  containerConcurrency: 0
   timeoutSeconds: 600
+  autoScaling:
+    class: kpa.autoscaling.knative.dev
+    metric: concurrency
+    softLimit: "1"
+    hardLimit: "0"
+    maxScale: "10"
 
 # Horizontally scale the application
 replicaCount: 1
 
 # Modify metadata for different resources
 metadata:
-  deployment: {}
+  deployment:
+    annotations:
+      ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "deployment", "service": "REPLACE_ME_APP_NAME"}]'
   kservice:
     annotations:
-      autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
-      autoscaling.knative.dev/metric: concurrency
-      autoscaling.knative.dev/maxScale: "10"
-      autoscaling.knative.dev/target: "1"
       ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "knative", "service": "REPLACE_ME_APP_NAME"}]'
   job: {}
   ingress:
@@ -68,13 +71,6 @@ env:
   default:
   - name: LQX_CONFIG_PATH
     value: /etc/REPLACE_ME_APP_NAME/config;./config
-  - name: DD_AGENT_SERVICE_HOST
-    valueFrom:
-      fieldRef:
-        apiVersion: v1
-        fieldPath: status.hostIP
-  - name: DD_AGENT_SERVICE_PORT
-    value: '8126'
   - name: LQX_VAULT_ADDR
     value: https://vault.secret-infra:8200
   - name: LQX_VAULT_CACERT
