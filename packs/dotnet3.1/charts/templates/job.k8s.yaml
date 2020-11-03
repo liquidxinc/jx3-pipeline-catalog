@@ -36,7 +36,7 @@ spec:
         envFrom:
         - secretRef:
             name: {{ template "name" .}}-config-env
-{{ (include "envVars" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
+{{ (include "envVars" (dict "Release" .Release "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
 {{- if hasKey .Values.service "ports" }}
 {{- $ports := .Values.service.ports }}
 {{- $lenPorts := len $ports }}
