@@ -1,6 +1,5 @@
 # Global requirements
 jxRequirements:
-  envName: default
   ingress:
     domain: svc.cluster.local
     externalDNS: true

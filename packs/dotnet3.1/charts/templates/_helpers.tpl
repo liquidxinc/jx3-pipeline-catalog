@@ -7,8 +7,15 @@
 {{- default $name .Values.serviceAccountNameOverride -}}
 {{- end -}}
 
+# TEMPORARY: Until jx provides a way to generically override Helm values dependent on the env an
+#            app is being deployed to, we must infer the environment name from the namespace being
+#            deployed to. This is fragile as the namespace name may not necessarily match the environment
+#            name in the long run but it's what we have. The other option is to infer the value from
+#            the ingress URL, i.e. .Values.jxRequirements.ingress.namespaceSubdomain.
+#            Ideally, jx will provide a way to add arbitrary values to .Values.jxRequirements that
+#            depend on the namespace being deployed to.
 {{- define "environmentName" -}}
-{{- default "default" .Values.jxRequirements.envName -}}
+{{- default "default" (trimPrefix "jx-" .Release.Namespace) -}}
 {{- end -}}
 
 {{- define "url" -}}
