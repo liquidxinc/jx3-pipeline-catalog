@@ -43,9 +43,11 @@ metadata:
       nginx.ingress.kubernetes.io/limit-rpm: "600"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/configuration-snippet: |
-        more_set_headers "Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';";
+        more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.cloudfront.net; worker-src blob:; connect-src 'self' https://*.amazonaws.com/ https://*.inblock.com; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com; img-src 'self' https://authn.lqx.ninja; style-src http://*.cloudfront.net https://authn.lqx.ninja https://fonts.googleapis.com 'unsafe-inline'";
         more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
         more_set_headers "Feature-Policy: camera 'none'; microphone 'none'; geolocation 'none'; encrypted-media 'none'; payment 'none'; speaker 'none'; usb 'none';";
+        more_set_headers "X-Frame-Options: sameorigin";
+        more_set_headers "X-Content-Type-Options: nosniff";
 
 # Image configuration
 image:
@@ -85,7 +87,7 @@ service:
   type: ClusterIP
   ports:
   - port: 80
-    targetPort: 8000
+    targetPort: 80
     protocol: TCP
     name: http
 
