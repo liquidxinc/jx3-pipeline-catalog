@@ -25,6 +25,11 @@ kservice:
     hardLimit: "0"
     maxScale: "10"
 
+# CronJob specific config options
+cronjob:
+  # Once per hour
+  schedule: "0 * * * *"
+
 # Horizontally scale the application
 replicaCount: 1
 
@@ -36,7 +41,9 @@ metadata:
   kservice:
     annotations:
       ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "knative", "service": "REPLACE_ME_APP_NAME"}]'
+  service: {}
   job: {}
+  cronjob: {}
   ingress:
     annotations:
       kubernetes.io/ingress.class: nginx
