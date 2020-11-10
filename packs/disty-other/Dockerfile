@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM liquidxdev.azurecr.io/node:12.18-alpine3.12
 
 WORKDIR /usr/src/app
 COPY package*.json ./

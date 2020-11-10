@@ -241,7 +241,7 @@ spec:
           command:
           - /bin/sh
           - -c
-          image: node:12-alpine3.10
+          image: liquidxdev.azurecr.io/node:12.18-alpine3.12
           name: build-dependencies
           volumeMounts:
           - mountPath: /tekton/home/.npmrc
@@ -253,7 +253,7 @@ spec:
           command:
           - /bin/sh
           - -c
-          image: node:12-alpine3.10
+          image: liquidxdev.azurecr.io/node:12.18-alpine3.12
           name: build-project
           resources:
             limits:
@@ -275,7 +275,7 @@ spec:
           command:
           - /bin/sh
           - -c
-          image: node:12-alpine
+          image: liquidxdev.azurecr.io/node:12.18-alpine3.12
           name: build-storybook
           resources: {}
         - args:

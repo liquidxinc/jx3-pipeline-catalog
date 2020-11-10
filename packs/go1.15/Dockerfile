@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine3.12 AS build
+FROM liquidxdev.azurecr.io/golang:1.15-alpine3.12 AS build
 
 # Install tools required to build the project
 # We will need to run `docker build --no-cache .` to update those dependencies
@@ -31,7 +31,7 @@ ENV GOPRIVATE=github.com/liquidxinc
 RUN make build
 
 # This results in a single layer image
-FROM alpine:3.12
+FROM liquidxdev.azurecr.io/alpine:3.12
 
 # Add TLS certs for HTTPS requests
 RUN apk update

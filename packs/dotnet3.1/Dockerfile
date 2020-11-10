@@ -25,7 +25,7 @@ COPY . .
 RUN make build
 
 # This results in a single layer image
-FROM alpine:3.10
+FROM liquidxdev.azurecr.io/alpine:3.12
 COPY --from=build /dotnet/src/project/bin/project /bin/project
 WORKDIR /bin/project
 

@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM liquidxdev.azurecr.io/nginx:alpine
 
 RUN apk add --update nodejs npm gettext libintl
 
