@@ -1,4 +1,4 @@
-{{- if .Values.service.enabled }}
+{{- if and .Values.service.enabled (not (eq .Values.type "kservice")) }}
 apiVersion: v1
 kind: Service
 metadata:
