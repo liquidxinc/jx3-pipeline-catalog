@@ -5,12 +5,12 @@ metadata:
   name: {{ template "name" . }}
   labels:
     app: {{ template "name" . }}
-{{- if hasKey .Values.metadata.job "labels" }}
-{{ toYaml .Values.metadata.job.labels | trim | indent 4 }}
+{{- if hasKey .Values.metadata.cronjob "labels" }}
+{{ toYaml .Values.metadata.cronjob.labels | trim | indent 4 }}
 {{- end }}
-{{- if hasKey .Values.metadata.job "annotations" }}
+{{- if hasKey .Values.metadata.cronjob "annotations" }}
   annotations:
-{{ toYaml .Values.metadata.job.annotations | trim | indent 4 }}
+{{ toYaml .Values.metadata.cronjob.annotations | trim | indent 4 }}
 {{- end }}
 spec:
   schedule: {{ .Values.cronjob.schedule | quote }}
@@ -20,12 +20,12 @@ spec:
         metadata:
           labels:
             app: {{ template "name" . }}
-{{- if hasKey .Values.metadata.job "labels" }}
-{{ toYaml .Values.metadata.job.labels | trim | indent 12 }}
+{{- if hasKey .Values.metadata.cronjob "labels" }}
+{{ toYaml .Values.metadata.cronjob.labels | trim | indent 12 }}
 {{- end }}
-{{- if hasKey .Values.metadata.job "annotations" }}
+{{- if hasKey .Values.metadata.cronjob "annotations" }}
           annotations:
-{{ toYaml .Values.metadata.job.annotations | trim | indent 12 }}
+{{ toYaml .Values.metadata.cronjob.annotations | trim | indent 12 }}
 {{- end }}
         spec:
           restartPolicy: OnFailure
