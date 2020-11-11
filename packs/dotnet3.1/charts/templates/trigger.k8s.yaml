@@ -1,0 +1,16 @@
+{{- if eq .Values.type "kservice" }}
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: {{ template "name" . }}
+spec:
+  broker: default
+  filter:
+    attributes:
+      type: {{ template "name" }}
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: {{ template "name" . }}
+{{- end }}
