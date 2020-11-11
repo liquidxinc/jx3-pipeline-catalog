@@ -1,5 +1,7 @@
 # Global requirements
 jxRequirements:
+  cluster:
+    project: needs-a-project-id
   ingress:
     domain: svc.cluster.local
     externalDNS: true
@@ -149,3 +151,9 @@ extraVolumeMounts:
     mountPath: /etc/REPLACE_ME_APP_NAME/config
   - name: vault-tls
     mountPath: /etc/vault/cacert
+
+# Service account options to control links to e.g. IAM or other auth systems
+serviceAccount:
+  # Enter the name of the IAM role this SA should have access to, e.g. development-s3readwriter
+  iam:
+    roleName: ""
