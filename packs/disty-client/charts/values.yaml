@@ -156,6 +156,8 @@ extraVolumeMounts:
 
 # Service account options to control links to e.g. IAM or other auth systems
 serviceAccount:
-  # Enter the name of the IAM role this SA should have access to, e.g. development-s3readwriter
+  # Enter the name of the IAM role this SA should have access to
+  # The name will be prefixed with "<env name>-", e.g. "s3readwriter" will turn
+  # into "development-s3readwriter" to allow for env-specific roles.
   iam:
     roleName: ""
