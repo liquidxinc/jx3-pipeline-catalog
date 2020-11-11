@@ -13,7 +13,7 @@ metadata:
 {{ toYaml .Values.metadata.job.annotations | trim | indent 4 }}
 {{- end }}
 spec:
-  schedule: {{ .Values.cronjob.schedule }}
+  schedule: {{ .Values.cronjob.schedule | quote }}
   jobTemplate:
     spec:
       template:
