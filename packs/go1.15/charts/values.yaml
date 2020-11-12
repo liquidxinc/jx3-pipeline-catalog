@@ -43,9 +43,13 @@ metadata:
   kservice:
     annotations:
       ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "knative", "service": "REPLACE_ME_APP_NAME"}]'
+  job:
+    annotations:
+      ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "job, "service": "REPLACE_ME_APP_NAME"}]'
+  cronjob:
+    annotations:
+      ad.datadoghq.com/REPLACE_ME_APP_NAME.logs: '[{"source": "cronjob, "service": "REPLACE_ME_APP_NAME"}]'
   service: {}
-  job: {}
-  cronjob: {}
   ingress:
     annotations:
       kubernetes.io/ingress.class: nginx
