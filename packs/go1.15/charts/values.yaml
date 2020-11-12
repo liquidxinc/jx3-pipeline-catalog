@@ -36,6 +36,7 @@ cronjob:
 deployment:
   strategy:
     type: RollingUpdate
+    # Comment out when using Recreate strategy
     rollingUpdate:
       maxUnavailable: "25%"
       maxSurge: "25%"
