@@ -32,6 +32,14 @@ cronjob:
   # Once per hour
   schedule: "0 * * * *"
 
+# Deployment specific config options
+deployment:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: "25%"
+      maxSurge: "25%"
+
 # Horizontally scale the application
 replicaCount: 1
 
