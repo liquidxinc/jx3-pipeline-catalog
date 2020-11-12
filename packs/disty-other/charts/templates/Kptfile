@@ -1,11 +1,11 @@
 apiVersion: kpt.dev/v1alpha1
 kind: Kptfile
 metadata:
-  name: chart-templates
+  name: templates
 upstream:
   type: git
   git:
-    commit: bcfb9c9e8ce55ebea79c853851943394b16604b9
-    repo: https://github.com/liquidxinc/jx3-pipeline-catalog
+    commit: 2947d2dbd272011e0b02cd043890545ee176ccce
+    repo: git@github.com:liquidxinc/jx3-pipeline-catalog
     directory: /charts/templates
     ref: master
