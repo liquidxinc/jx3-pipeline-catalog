@@ -18,8 +18,12 @@
 {{- default "default" (trimPrefix "jx-" .Release.Namespace) -}}
 {{- end -}}
 
+{{- define "baseEnvUrl" -}}
+{{- printf "%s%s" (trimPrefix "." .Values.jxRequirements.ingress.namespaceSubDomain) .Values.jxRequirements.ingress.domain -}}
+{{- end -}}
+
 {{- define "url" -}}
-{{- $url := printf "%s%s%s" (include "name" .) .Values.jxRequirements.ingress.namespaceSubDomain .Values.jxRequirements.ingress.domain -}}
+{{- $url := printf "%s.%s" (include "name" .) (include "baseEnvUrl" .) -}}
 {{- default $url .Values.ingress.urlOverride -}}
 {{- end -}}
 

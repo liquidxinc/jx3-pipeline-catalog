@@ -142,7 +142,11 @@ tls:
 # Config for ingress
 ingress:
   enabled: true
+  # Valid FQDNs to add, e.g. example.inblock.com, cannot dynamically specify env
   extraURLs: []
+  # Subdomains to add the base env FQDN, e.g. "example." will turn into "example.<env>.<base domain>"
+  # Empty string will give just "<env>.<base domain>"
+  extraURLPrefixes: []
 
 # Execution command
 command:
