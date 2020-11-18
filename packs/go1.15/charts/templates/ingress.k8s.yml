@@ -22,6 +22,26 @@ spec:
           servicePort: {{ $port.targetPort }}
 {{- end }}
 {{- end }}
+{{- if hasKey .Values.ingress "extraURLPrefixes" }}
+{{- $extraURLPrefixes := .Values.ingress.extraURLPrefixes }}
+{{- $lenExtraURLPrefixes := len $extraURLPrefixes }}
+{{- if gt $lenExtraURLPrefixes 0 }}
+{{- range $i, $urlPrefix := .Values.ingress.extraURLPrefixes }}
+  - host: {{ $urlPrefix }}{{ template "baseEnvUrl" (dict "Values" $.Values) }}
+    http:
+      paths:
+{{- range $j, $port := $.Values.service.ports }}
+      - backend:
+          serviceName: {{ $serviceName }}
+{{- if hasKey $port "name" }}
+          servicePort: {{ $port.name }}
+{{- else }}
+          servicePort: {{ $port.targetPort }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- if hasKey .Values.ingress "extraURLs" }}
 {{- $extraURLs := .Values.ingress.extraURLs }}
 {{- $lenExtraURLs := len $extraURLs }}
@@ -48,6 +68,9 @@ spec:
     - {{ template "url" . }}
 {{- range $i, $url := .Values.ingress.extraURLs }}
     - {{ $url }}
+{{- end }}
+{{- range $i, $url := .Values.ingress.extraURLPrefixes }}
+    - {{ $url }}{{ include "baseEnvUrl" (dict "Values" $.Values) }}
 {{- end }}
     secretName: {{ template "tlsSecretName" . }}
 {{- end }}
