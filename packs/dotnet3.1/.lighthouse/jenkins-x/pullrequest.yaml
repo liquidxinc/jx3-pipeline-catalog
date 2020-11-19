@@ -233,21 +233,33 @@ spec:
           command:
           - /bin/sh
           - -c
-          image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine3.10
+          image: liquidxdev.azurecr.io/golang:1.15-alpine3.12
           name: build-test
+          volumeMounts:
+          - mountPath: /root/.ssh_mounted/id_rsa
+            name: github-ssh-keys
+            subPath: id_rsa
           resources: {}
         - args:
-          - source .jx/variables.sh && /kaniko/executor $KANIKO_FLAGS --cache=false --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --cache-repo=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/cache --build-arg VSS_NUGET_EXTERNAL_FEED_ENDPOINTS="${VSS_NUGET_EXTERNAL_FEED_ENDPOINTS}"
+          - source .jx/variables.sh && /kaniko/executor $KANIKO_FLAGS --cache=false --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --cache-repo=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/cache --build-arg SSH_PRIVATE_KEY="$(cat /root/.ssh_mounted/id_rsa)"
           command:
           - /busybox/sh
           - -c
           image: gcr.io/jenkinsxio/kaniko:0.0.5
-          envFrom:
-          - secretRef:
-              name: azure-artifacts-auth
           name: build-container-build
+          volumeMounts:
+          - mountPath: /root/.ssh_mounted/id_rsa
+            name: github-ssh-keys
+            subPath: id_rsa
           resources: {}
         volumes:
+        - name: github-ssh-keys
+          secret:
+            secretName: github-ssh-keys
+            defaultMode: 0400
+            items:
+            - key: filament-lqx
+              path: id_rsa
         - emptyDir: {}
           name: workspace-volume
         - downwardAPI:
