@@ -1,0 +1,64 @@
+{{- if eq .Values.type "job" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "name" . }}
+  labels:
+    app: {{ template "name" . }}
+{{- if hasKey .Values.metadata.job "labels" }}
+{{ toYaml .Values.metadata.job.labels | trim | indent 4 }}
+{{- end }}
+{{- if hasKey .Values.metadata.job "annotations" }}
+  annotations:
+{{ toYaml .Values.metadata.job.annotations | trim | indent 4 }}
+{{- end }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+{{- if hasKey .Values.metadata.job "labels" }}
+{{ toYaml .Values.metadata.job.labels | trim | indent 8 }}
+{{- end }}
+{{- if hasKey .Values.metadata.job "annotations" }}
+      annotations:
+{{ toYaml .Values.metadata.job.annotations | trim | indent 8 }}
+{{- end }}
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ template "serviceAccountName" . }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command:
+{{ toYaml .Values.command | trim | indent 8 }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+        - secretRef:
+            name: {{ template "name" .}}-config-env
+{{ (include "envVars" (dict "Release" .Release "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
+{{- if hasKey .Values.service "ports" }}
+{{- $ports := .Values.service.ports }}
+{{- $lenPorts := len $ports }}
+{{- if gt $lenPorts 0 }}
+        ports:
+{{- range $key, $port := $ports }}
+        - containerPort: {{ $port.targetPort }}
+{{- if hasKey $port "name" }}
+          name: {{ $port.name }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if hasKey .Values "livenessProbe" }}
+        livenessProbe:
+{{ toYaml .Values.livenessProbe | trim | indent 10 }}
+{{- end }}
+{{- if hasKey .Values "readinessProbe" }}
+        readinessProbe:
+{{ toYaml .Values.readinessProbe | trim | indent 10 }}
+{{- end }}
+{{ (include "resources" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
+{{ (include "volumeMounts" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 8 }}
+{{ (include "volumes" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 6 }}
+{{- end }}
