@@ -19,4 +19,4 @@ spec:
     context: "hotfix"
     source: "hotfix.yaml"
     branches:
-    - hotfix-*
+    - ^hotfix-.+
