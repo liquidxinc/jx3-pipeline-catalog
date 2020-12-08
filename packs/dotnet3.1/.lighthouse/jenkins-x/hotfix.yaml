@@ -33,7 +33,7 @@ spec:
             git config --global credential.helper store
             git clone $REPO_URL $SUBDIR
             cd $SUBDIR
-            git checkout $PULL_BASE_SHA
+            git checkout $PULL_BASE_REF
             echo "checked out revision: $PULL_BASE_REF to dir: $SUBDIR"
         - args:
           - '[ -d /builder/home ] || mkdir -p /builder && ln -s /tekton/home /builder/home'
@@ -48,7 +48,7 @@ spec:
           resources: {}
           script: |
             #!/usr/bin/env bash
-            VERSION=${PULL_BASE_REF}
+            VERSION=$(jx-release-version)-$(echo $PULL_BASE_REF | tr [:upper:] [:lower:])
             echo "Setting version to $VERSION"
             echo $VERSION > VERSION
         - image: gcr.io/jenkinsxio/jx-boot:3.1.3
