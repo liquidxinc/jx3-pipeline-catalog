@@ -65,8 +65,15 @@ spec:
           resources: {}
           script: |
             #!/usr/bin/env sh
-            apk add make
+            apk add git make openssh gcc g++
+            git config --global url."git@github.com:".insteadOf "https://github.com/"
+            mkdir -p /root/.ssh
+            cp /root/.ssh_mounted/id_rsa /root/.ssh/id_rsa
+            chmod 400 /root/.ssh/id_rsa
+            touch /root/.ssh/known_hosts
+            ssh-keyscan github.com >> /root/.ssh/known_hosts
             make test
+            git config --global --unset url."git@github.com:".insteadOf
         - image: gcr.io/kaniko-project/executor:debug-v1.3.0
           name: build-container-build
           volumeMounts:
