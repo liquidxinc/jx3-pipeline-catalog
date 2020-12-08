@@ -56,36 +56,39 @@ spec:
           script: |
             #!/usr/bin/env sh
             jx gitops variables
-        - image: liquidxdev.azurecr.io/golang:1.15-alpine3.12
-          name: build-test
+        - args:
+          - npm ci
+          command:
+          - /bin/sh
+          - -c
+          image: liquidxdev.azurecr.io/node:12.18-alpine3.12
+          name: build-dependencies
           volumeMounts:
-          - mountPath: /root/.ssh_mounted/id_rsa
-            name: github-ssh-keys
-            subPath: id_rsa
+          - mountPath: /tekton/home/.npmrc
+            name: npmrc
+            subPath: .npmrc
           resources: {}
-          script: |
-            #!/usr/bin/env sh
-            apk add git make openssh gcc g++
-            git config --global url."git@github.com:".insteadOf "https://github.com/"
-            mkdir -p /root/.ssh
-            cp /root/.ssh_mounted/id_rsa /root/.ssh/id_rsa
-            chmod 400 /root/.ssh/id_rsa
-            touch /root/.ssh/known_hosts
-            ssh-keyscan github.com >> /root/.ssh/known_hosts
-            make test
-            git config --global --unset url."git@github.com:".insteadOf
+        - args:
+          - CI=true DISPLAY=:99 npm test
+          command:
+          - /bin/sh
+          - -c
+          image: liquidxdev.azurecr.io/node:12.18-alpine3.12
+          name: build-test
+          resources: {}
         - image: gcr.io/kaniko-project/executor:debug-v1.3.0
-          name: build-container-build
           volumeMounts:
-          - mountPath: /root/.ssh_mounted/id_rsa
-            name: github-ssh-keys
-            subPath: id_rsa
+          - mountPath: /tekton/home/.npmrc
+            name: npmrc
+            subPath: .npmrc
+          name: build-container-build
           resources: {}
           script: |
             #!/busybox/sh
             source .jx/variables.sh
             cp /tekton/creds-secrets/tekton-container-registry-auth/.dockerconfigjson /kaniko/.docker/config.json
-            /kaniko/executor $KANIKO_FLAGS --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --build-arg SSH_PRIVATE_KEY="$(cat /root/.ssh_mounted/id_rsa)"
+            cp /tekton/home/.npmrc .npmrc
+            /kaniko/executor $KANIKO_FLAGS --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --build-arg VSS_NUGET_EXTERNAL_FEED_ENDPOINTS="${VSS_NUGET_EXTERNAL_FEED_ENDPOINTS}"
         - image: gcr.io/jenkinsxio/jx-changelog:0.0.8
           name: promote-changelog
           script: |
@@ -107,13 +110,12 @@ spec:
             #!/usr/bin/env sh
             jx gitops helm release
         volumes:
-        - name: github-ssh-keys
+        - name: npmrc
           secret:
-            secretName: github-ssh-keys
-            defaultMode: 0400
+            secretName: jenkins-npm-token
             items:
-            - key: filament-lqx
-              path: id_rsa
+            - key: token
+              path: .npmrc
         - emptyDir: {}
           name: workspace-volume
         - downwardAPI:
