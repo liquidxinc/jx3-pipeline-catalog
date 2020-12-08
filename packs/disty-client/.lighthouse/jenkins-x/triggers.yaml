@@ -15,3 +15,8 @@ spec:
     source: "release.yaml"
     branches:
     - jx3
+  - name: hotfix
+    context: "hotfix"
+    source: "hotfix.yaml"
+    branches:
+    - hotfix-*
